@@ -51,7 +51,6 @@ class Service:
 
         try:
             uci = request.query.get("lastMove") or request.query["lastmove"]
-            valueTest = int(uci)
             lastmove = uci
         except KeyError:
             lastmove = None

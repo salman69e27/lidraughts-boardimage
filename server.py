@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
+# Draughts adaptation of web-boardimage by Niklas Fiekas <niklas.fiekas@backscattering.de>.
+# Distributed under the same license:
+#
 # web-boardimage is an HTTP service that renders chess board images.
 # Copyright (C) 2016-2017 Niklas Fiekas <niklas.fiekas@backscattering.de>
 #
@@ -17,13 +20,13 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-"""An HTTP service that renders chess board images"""
+"""An HTTP service that renders draughts board images"""
 
 import argparse
 import asyncio
 import aiohttp.web
-import chess
-import chess.svg
+import draughts
+import draughts_svg
 import cairosvg
 import re
 
@@ -34,8 +37,8 @@ class Service:
 
     def make_svg(self, request):
         try:
-            parts = request.query["fen"].replace("_", " ").split(" ", 1)
-            board = chess.BaseBoard("/".join(parts[0].split("/")[0:8]))
+            parts = request.query["fen"].split(":")
+            board = draughts.BaseBoard(":".join(parts[:3]))
         except KeyError:
             raise aiohttp.web.HTTPBadRequest(reason="fen required")
         except ValueError:
@@ -48,18 +51,12 @@ class Service:
 
         try:
             uci = request.query.get("lastMove") or request.query["lastmove"]
-            lastmove = chess.Move.from_uci(uci)
+            valueTest = int(uci)
+            lastmove = uci
         except KeyError:
             lastmove = None
         except ValueError:
             raise aiohttp.web.HTTPBadRequest(reason="lastMove is not a valid uci move")
-
-        try:
-            check = chess.SQUARE_NAMES.index(request.query["check"])
-        except KeyError:
-            check = None
-        except ValueError:
-            raise aiohttp.web.HTTPBadRequest(reason="check is not a valid square name")
 
         try:
             arrows = [arrow(s.strip()) for s in request.query.get("arrows", "").split(",") if s.strip()]
@@ -68,7 +65,7 @@ class Service:
 
         flipped = request.query.get("orientation", "white") == "black"
 
-        return chess.svg.board(board, coordinates=False, flipped=flipped, lastmove=lastmove, check=check, arrows=arrows, size=size, style=self.css)
+        return draughts_svg.board(board, flipped=flipped, lastmove=lastmove, arrows=arrows, size=size, style=self.css)
 
     @asyncio.coroutine
     def render_svg(self, request):
@@ -82,9 +79,9 @@ class Service:
 
 
 def arrow(s):
-    tail = chess.SQUARE_NAMES.index(s[:2])
-    head = chess.SQUARE_NAMES.index(s[2:]) if len(s) > 2 else tail
-    return chess.svg.Arrow(tail, head)
+    tail = int(s[:2])
+    head = int(s[2:]) if len(s) > 2 else tail
+    return draughts_svg.Arrow(tail, head)
 
 
 if __name__ == "__main__":

@@ -1,7 +1,11 @@
-web-boardimage
+lidraughts-boardimage
 ==============
 
-An HTTP service that renders chess board images.
+An HTTP service that renders draughts board images, used for [lidraughts.org](https://lidraughts.org)
+
+It includes a minimal implementation of the [python-chess](https://github.com/niklasf/python-chess) library for draughts (only piece/board representation and svg).
+
+It uses the same API as [web-boardimage](https://github.com/niklasf/web-boardimage), where move notation and FEN strings are replaced by their draughts counterparts. See the adapted installation and usage instructions below.
 
 Usage
 -----
@@ -31,20 +35,7 @@ name | type | default | description
 **fen** | string | required | FEN of the position with at least the board part
 **orientation** | string | white | `white` or `black`
 **size** | int | 360 | The width and height of the image
-**lastMove** | string | *(none)* | The last move to highlight, e.g. `f4g6`
-**check** | string | *(none)* | A square to highlight for check, e.g. `h8`
-**arrows** | string | *(none)* | Draw arrows and circles, e.g. `e6g8,h7`
-
-```
-https://backscattering.de/web-boardimage/board.svg?fen=5r1k/1b4pp/3pB1N1/p2Pq2Q/PpP5/6PK/8/8&lastMove=f4g6&check=h8&arrows=e6g8,h7
-```
-
-![example board image](https://backscattering.de/web-boardimage/board.svg?fen=5r1k/1b4pp/3pB1N1/p2Pq2Q/PpP5/6PK/8/8&lastMove=f4g6&check=h8&arrows=e6g8,h7)
+**lastMove** | string | *(none)* | The last move to highlight, e.g. `0510`
+**arrows** | string | *(none)* | Draw arrows and circles, e.g. `0622,44`
 
 ### `GET /board.png` render a PNG
-
-License
--------
-
-web-boardimage is licensed under the AGPLv3+. See LICENSE.txt for the full
-license text.

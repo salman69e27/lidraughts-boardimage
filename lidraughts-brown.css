@@ -11,7 +11,3 @@
 .square.dark.lastmove {
   fill: #aaa23b;
 }
-
-.check {
-  fill: url(#check_gradient);
-}

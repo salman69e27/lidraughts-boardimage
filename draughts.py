@@ -38,7 +38,7 @@ class Piece:
 
     def symbol(self):
         """
-        Gets the symbol ``P``, ``N``, ``B``, ``R``, ``Q`` or ``K`` for white
+        Gets the symbol ``M``, ``K``, ``G`` or ``P`` for white
         pieces or the lower-case variants for the black pieces.
         """
         if self.color == WHITE:
@@ -92,8 +92,14 @@ class BaseBoard:
     The board is initialized with the standard draughts starting position, unless
     otherwise specified in the optional *board_fen* argument. If *board_fen*
     is ``None``, an empty board is created.
+    The *board_size* argument sets the amount of squares for the width and height
+    of the board.
+    :raises: :exc:`ValueError` if the board size is invalid.
     """
-    def __init__(self, board_fen=STARTING_BOARD_FEN):
+    def __init__(self, board_fen=STARTING_BOARD_FEN, board_size=10):
+        self.board_size = board_size
+        if self.board_size % 2 != 0 or self.board_size < 2:
+            raise ValueError("invalid board_size: {}".format(board_size))
         if board_fen is None:
             self._clear_board()
         elif board_fen == STARTING_BOARD_FEN:
@@ -102,14 +108,13 @@ class BaseBoard:
             self._set_board_fen(board_fen)
 
     def _reset_board(self):
-        self.pieces = { 1: Piece.from_symbol("m"), 2: Piece.from_symbol("m"), 3: Piece.from_symbol("m"), 4: Piece.from_symbol("m"), 5: Piece.from_symbol("m"),
-                        6: Piece.from_symbol("m"), 7: Piece.from_symbol("m"), 8: Piece.from_symbol("m"), 9: Piece.from_symbol("m"), 10: Piece.from_symbol("m"),
-                        11: Piece.from_symbol("m"), 12: Piece.from_symbol("m"), 13: Piece.from_symbol("m"), 14: Piece.from_symbol("m"), 15: Piece.from_symbol("m"),
-                        16: Piece.from_symbol("m"), 17: Piece.from_symbol("m"), 18: Piece.from_symbol("m"), 19: Piece.from_symbol("m"), 20: Piece.from_symbol("m"),
-                        31: Piece.from_symbol("M"), 32: Piece.from_symbol("M"), 33: Piece.from_symbol("M"), 34: Piece.from_symbol("M"), 35: Piece.from_symbol("M"),
-                        36: Piece.from_symbol("M"), 37: Piece.from_symbol("M"), 38: Piece.from_symbol("M"), 39: Piece.from_symbol("M"), 40: Piece.from_symbol("M"),
-                        41: Piece.from_symbol("M"), 42: Piece.from_symbol("M"), 43: Piece.from_symbol("M"), 44: Piece.from_symbol("M"), 45: Piece.from_symbol("M"),
-                        46: Piece.from_symbol("M"), 47: Piece.from_symbol("M"), 48: Piece.from_symbol("M"), 49: Piece.from_symbol("M"), 50: Piece.from_symbol("M") }
+        self.pieces = {}
+        fields = self.board_size ** 2 // 2
+        piece_count = (self.board_size // 2 - 1) * (self.board_size // 2)
+        for b in range(1, piece_count + 1):
+            self.pieces[b] = Piece.from_symbol("m")
+        for w in range(fields - piece_count + 1, fields + 1):
+            self.pieces[w] = Piece.from_symbol("M")
 
     def reset_board(self):
         self._reset_board()

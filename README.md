@@ -33,6 +33,7 @@ HTTP API
 name | type | default | description
 --- | --- | --- | ---
 **fen** | string | required | FEN of the position with at least the board part
+**boardSize** | string | 10 | The width and height of the board, e.g. `10` or `8`
 **orientation** | string | white | `white` or `black`
 **size** | int | 360 | The width and height of the image
 **lastMove** | string | *(none)* | The last move to highlight, e.g. `0510`

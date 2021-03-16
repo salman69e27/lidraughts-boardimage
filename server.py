@@ -29,6 +29,7 @@ import draughts
 import draughts_svg
 import cairosvg
 import re
+from urllib.parse import unquote
 
 
 class Service:
@@ -37,8 +38,15 @@ class Service:
 
     def make_svg(self, request):
         try:
-            parts = request.query["fen"].split(":")
-            board = draughts.BaseBoard(":".join(parts[:3]))
+            board_size = int(request.query.get("boardSize") or request.query.get("boardsize", 10))
+            if board_size % 2 != 0 or board_size < 2:
+                raise ValueError("boardsize is not even or too small")
+        except ValueError:
+            raise aiohttp.web.HTTPBadRequest(reason="invalid boardsize")
+
+        try:
+            parts = unquote(request.query["fen"]).split(":")
+            board = draughts.BaseBoard(":".join(parts[:3]), board_size)
         except KeyError:
             raise aiohttp.web.HTTPBadRequest(reason="fen required")
         except ValueError:
@@ -55,10 +63,10 @@ class Service:
         except KeyError:
             lastmove = None
         except ValueError:
-            raise aiohttp.web.HTTPBadRequest(reason="lastMove is not a valid uci move")
+            raise aiohttp.web.HTTPBadRequest(reason="lastMove is not a valid move")
 
         try:
-            arrows = [arrow(s.strip()) for s in request.query.get("arrows", "").split(",") if s.strip()]
+            arrows = [arrow(s.strip()) for s in unquote(request.query.get("arrows", "")).split(",") if s.strip()]
         except ValueError:
             raise aiohttp.web.HTTPBadRequest(reason="invalid arrow")
 

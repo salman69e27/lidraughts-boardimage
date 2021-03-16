@@ -104,8 +104,9 @@ def board(board=None, *, flipped=False, lastmove=None, arrows=(), size=None, sty
         400 board) or ``None`` (the default) for no size limit.
     :param style: A CSS stylesheet to include in the SVG image.
     """
+    board_size = board.board_size if board else 10
     margin = 0
-    svg = _svg(10 * SQUARE_SIZE + 2 * margin, size)
+    svg = _svg(board_size * SQUARE_SIZE + 2 * margin, size)
 
     if style:
         ET.SubElement(svg, "style").text = style
@@ -120,12 +121,12 @@ def board(board=None, *, flipped=False, lastmove=None, arrows=(), size=None, sty
                 if board.contains_piece(piece_type, color):
                     defs.append(ET.fromstring(PIECES[draughts.Piece(piece_type, color).symbol()]))
 
-    for square in range(100):
+    for square in range(board_size ** 2):
 
-        x_index = square % 10
-        y_index = int((square + (10 - x_index)) / 10 - 1)
-        x = (x_index if not flipped else 9 - x_index) * SQUARE_SIZE + margin
-        y = (y_index if not flipped else 9 - y_index) * SQUARE_SIZE + margin
+        x_index = square % board_size
+        y_index = int((square + (board_size - x_index)) / board_size - 1)
+        x = (x_index if not flipped else board_size - 1 - x_index) * SQUARE_SIZE + margin
+        y = (y_index if not flipped else board_size - 1 - y_index) * SQUARE_SIZE + margin
 
         square_uci = int(square / 2) + 1 if x_index % 2 != y_index % 2 else -1
 
@@ -156,18 +157,18 @@ def board(board=None, *, flipped=False, lastmove=None, arrows=(), size=None, sty
     for tail, head in arrows:
 
         tail_conv = tail * 2 - 1
-        tail_y = (tail_conv + (10 - tail_conv % 10)) / 10 - 1
-        tail_x = tail_conv % 10 - tail_y % 2
+        tail_y = (tail_conv + (board_size - tail_conv % board_size)) / board_size - 1
+        tail_x = tail_conv % board_size - tail_y % 2
 
         head_conv = head * 2 - 1
-        head_y = (head_conv + (10 - head_conv % 10)) / 10 - 1
-        head_x = head_conv % 10 - head_y % 2
+        head_y = (head_conv + (board_size - head_conv % board_size)) / board_size - 1
+        head_x = head_conv % board_size - head_y % 2
 
-        xtail = margin + (tail_x + 0.5 if not flipped else 9.5 - tail_x) * SQUARE_SIZE
-        ytail = margin + (9.5 - tail_y if flipped else tail_y + 0.5) * SQUARE_SIZE
+        xtail = margin + (tail_x + 0.5 if not flipped else board_size - 0.5 - tail_x) * SQUARE_SIZE
+        ytail = margin + (board_size - 0.5 - tail_y if flipped else tail_y + 0.5) * SQUARE_SIZE
 
-        xhead = margin + (head_x + 0.5 if not flipped else 9.5 - head_x) * SQUARE_SIZE
-        yhead = margin + (9.5 - head_y if flipped else head_y + 0.5) * SQUARE_SIZE
+        xhead = margin + (head_x + 0.5 if not flipped else board_size - 0.5 - head_x) * SQUARE_SIZE
+        yhead = margin + (board_size - 0.5 - head_y if flipped else head_y + 0.5) * SQUARE_SIZE
 
         if (head_x, head_y) == (tail_x, tail_y):
             ET.SubElement(svg, "circle", {

@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-import draughts
+import pdraughts
 import collections
 import math
 
@@ -84,7 +84,7 @@ def _text(content, x, y, width, height):
 
 def piece(piece, size=None):
     """
-    Renders the given :class:`draughts.Piece` as an SVG image.
+    Renders the given :class:`pdraughts.Piece` as an SVG image.
     """
     svg = _svg(SQUARE_SIZE, size)
     svg.append(ET.fromstring(PIECES[piece.symbol()]))
@@ -94,11 +94,11 @@ def piece(piece, size=None):
 def board(board=None, *, flipped=False, lastmove=None, arrows=(), size=None, style=None):
     """
     Renders a board with pieces and/or arrows as an SVG image.
-    :param board: A :class:`draughts.BaseBoard` for a draughtsboard with pieces or
+    :param board: A :class:`pdraughts.BaseBoard` for a draughtsboard with pieces or
         ``None`` (the default) for a draughtsboard without pieces.
     :param flipped: Pass ``True`` to flip the board.
     :param lastmove: An uci sequence to be highlighted.
-    :param arrows: A list of :class:`~draughts.svg.Arrow` objects or a list of tuples
+    :param arrows: A list of :class:`~pdraughts.svg.Arrow` objects or a list of tuples
         . An arrow from a square pointing to the same square is drawn as a circle
     :param size: The size of the image in pixels (e.g., ``400`` for a 400 by
         400 board) or ``None`` (the default) for no size limit.
@@ -116,10 +116,10 @@ def board(board=None, *, flipped=False, lastmove=None, arrows=(), size=None, sty
 
     defs = ET.SubElement(svg, "defs")
     if board:
-        for color in draughts.COLORS:
-            for piece_type in draughts.PIECE_TYPES:
+        for color in pdraughts.COLORS:
+            for piece_type in pdraughts.PIECE_TYPES:
                 if board.contains_piece(piece_type, color):
-                    defs.append(ET.fromstring(PIECES[draughts.Piece(piece_type, color).symbol()]))
+                    defs.append(ET.fromstring(PIECES[pdraughts.Piece(piece_type, color).symbol()]))
 
     for square in range(board_size ** 2):
 
@@ -150,7 +150,7 @@ def board(board=None, *, flipped=False, lastmove=None, arrows=(), size=None, sty
             piece = board.piece_at(square_uci)
             if piece:
                 ET.SubElement(svg, "use", {
-                    "xlink:href": "#%s-%s" % (draughts.COLOR_NAMES[piece.color], draughts.PIECE_NAMES[piece.piece_type]),
+                    "xlink:href": "#%s-%s" % (pdraughts.COLOR_NAMES[piece.color], pdraughts.PIECE_NAMES[piece.piece_type]),
                     "transform": "translate(%d, %d) scale(%f, %f)" % (x, y, SQUARE_SIZE / 210, SQUARE_SIZE / 210),
                 })
 

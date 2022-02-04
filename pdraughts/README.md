@@ -1,6 +1,8 @@
 lidraughts-boardimage
 ==============
 
+**Intended for personal use**
+
 An HTTP service that renders draughts board images, used for [lidraughts.org](https://lidraughts.org)
 
 It includes a minimal implementation of the [python-chess](https://github.com/niklasf/python-chess) library for draughts (only piece/board representation and svg).
